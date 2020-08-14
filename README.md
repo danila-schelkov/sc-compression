@@ -7,5 +7,5 @@ Version 0.2.5
 - Decompression
 - Compression
 
-TestPyPi - https://test.pypi.org/project/sc-compression/
+TestPyPi - https://test.pypi.org/project/sc-compression/ <br>
 PyPi - https://pypi.org/project/sc-compression/
