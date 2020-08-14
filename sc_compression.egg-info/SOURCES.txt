@@ -1,0 +1,11 @@
+README.md
+setup.py
+sc_compression/__init__.py
+sc_compression/compression.py
+sc_compression.egg-info/PKG-INFO
+sc_compression.egg-info/SOURCES.txt
+sc_compression.egg-info/dependency_links.txt
+sc_compression.egg-info/top_level.txt
+sc_compression/utils/__init__.py
+sc_compression/utils/reader.py
+sc_compression/utils/writer.py

@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: sc-compression
+Version: 0.2.5
+Summary: SC Compression
+Home-page: https://github.com/vorono4ka/sc-compression
+Author: Vorono4ka
+Author-email: crowo4ka@gmail.com
+License: GPLv3
+Description: ### SC Compression
+        
+        Version 0.2.5
+        -
+        
+        ### Tools:
+        - Decompression
+        - Compression
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.5
+Description-Content-Type: text/markdown
