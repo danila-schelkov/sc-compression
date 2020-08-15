@@ -8,8 +8,8 @@ from sc_compression.utils.writer import Writer
 
 
 class Decompressor(Reader):
-    def __init__(self, buffer: bytes):
-        super().__init__(buffer, 'little')
+    def __init__(self):
+        super().__init__(b'')
 
     def get_signature(self):
         if self.buffer[:3] == b'\x5d\x00\x00':
@@ -22,16 +22,18 @@ class Decompressor(Reader):
             return 'sig'
         return None
 
-    def decompress(self) -> bytes:
+    def decompress(self, buffer: bytes) -> bytes:
+        super().__init__(buffer, 'little')
+
         signature = self.get_signature()
         if signature is None:
-            return self.buffer
+            return buffer
         elif signature == 'sc':
-            self.buffer = self.buffer[26:]
-            self.decompress()
+            buffer = buffer[26:]
+            decompressed = self.decompress(buffer)
         elif signature == 'sig':
-            self.buffer = self.buffer[68:]
-            self.decompress()
+            buffer = buffer[68:]
+            decompressed = self.decompress(buffer)
         elif signature == 'sclz':
             self.read(30)
             dict_size_log2 = self.readUByte()
@@ -45,10 +47,11 @@ class Decompressor(Reader):
             decompressor = lzma.LZMADecompressor()
 
             self.read(5)
-            uncompressed_size = self.readInt32()
-
-            lzma_byte = (b'\xff' if uncompressed_size == -1 else b'\x00')
-            compressed = self.buffer[:9] + lzma_byte * 4 + self.buffer[9:]
+            # uncompressed_size = self.readInt32()
+            #
+            # lzma_byte = (b'\xff' if uncompressed_size == -1 else b'\x00')
+            # compressed = self.buffer[:9] + lzma_byte * 4 + self.buffer[9:]  # True Method
+            compressed = self.buffer[:5] + b'\xff' * 8 + self.buffer[9:]
 
             decompressed = decompressor.decompress(compressed)
         else:
