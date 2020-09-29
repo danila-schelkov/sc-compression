@@ -18,7 +18,7 @@ class Decompressor(Reader):
             if len(self.buffer) >= 30 and self.buffer[26:30] == b'SCLZ':
                 return 'sclz'
             return 'sc'
-        elif self.buffer[:4] == 'SIG:':
+        elif self.buffer[:4] == b'Sig:':
             return 'sig'
         return None
 

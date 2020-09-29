@@ -6,7 +6,7 @@ with open('README.md') as fh:
 
 setuptools.setup(
     name='sc-compression',
-    version='0.2.6',
+    version='0.2.7',
     author='Vorono4ka',
     author_email='crowo4ka@gmail.com',
     description='SC Compression',
