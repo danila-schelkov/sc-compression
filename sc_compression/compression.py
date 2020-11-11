@@ -44,10 +44,10 @@ class Decompressor(Reader):
             }
             decompressed = lzham.decompress(self.buffer[35:], uncompressed_size, filters)
         elif signature == 'lzma':
-            self.read(5)
+            decompressor = lzma.LZMADecompressor()
             compressed = self.buffer[:5] + b'\xff' * 8 + self.buffer[9:]
 
-            decompressed = lzma.decompress(compressed)
+            decompressed = decompressor.decompress(compressed)
         else:
             raise TypeError(signature)
 
