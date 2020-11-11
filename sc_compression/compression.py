@@ -84,13 +84,14 @@ class Compressor(Writer):
         if signature is None:
             return data
         elif signature in ['lzma', 'sc', 'sig']:
-            compressor = lzma.LZMACompressor(format=lzma.FORMAT_ALONE, filters=self.lzma_filters)
+            # compressor = lzma.LZMACompressor(format=lzma.FORMAT_ALONE, filters=self.lzma_filters)
+            # 
+            # compressed = compressor.compress(data)
+            compressed = lzma.compress(data, format=lzma.FORMAT_ALONE, filters=self.lzma_filters)
 
-            compressed = compressor.compress(data)
+            self.write(compressed[:5])
 
-            self.write(compressed[:9])  # [:5]
-
-            # self.writeUInt32(uncompressed_size)
+            self.writeInt32(uncompressed_size)
 
             self.write(compressed[13:])
 

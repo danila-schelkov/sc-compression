@@ -1,3 +1,10 @@
-
+sc_compression.egg-info/
+examples/decompressor/out/
+examples/decompressor/in/
+examples/compressor/out/
+examples/compressor/in/
 .idea/
+build/
+dist/
+
 .idea/vcs.xml
