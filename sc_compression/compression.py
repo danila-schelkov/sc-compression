@@ -12,14 +12,14 @@ class Decompressor(Reader):
         super().__init__(b'')
 
     def get_signature(self):
-        if self.buffer[:3] == b'\x5d\x00\x00':
-            return 'lzma'
-        elif self.buffer.startswith(b'SC'):
+        if self.buffer.startswith(b'SC'):
             if len(self.buffer) >= 30 and self.buffer[26:30] == b'SCLZ':
                 return 'sclz'
             return 'sc'
         elif self.buffer[:4] == b'Sig:':
             return 'sig'
+        elif self.buffer[1:5] == b'\x00\x00\x04\x00':  # SC Dict size
+            return 'lzma'
         return None
 
     def decompress(self, buffer: bytes) -> bytes:
@@ -44,16 +44,10 @@ class Decompressor(Reader):
             }
             decompressed = lzham.decompress(self.buffer[35:], uncompressed_size, filters)
         elif signature == 'lzma':
-            decompressor = lzma.LZMADecompressor()
-
             self.read(5)
-            # uncompressed_size = self.readInt32()
-            #
-            # lzma_byte = (b'\xff' if uncompressed_size == -1 else b'\x00')
-            # compressed = self.buffer[:9] + lzma_byte * 4 + self.buffer[9:]  # True Method
             compressed = self.buffer[:5] + b'\xff' * 8 + self.buffer[9:]
 
-            decompressed = decompressor.decompress(compressed)
+            decompressed = lzma.decompress(compressed)
         else:
             raise TypeError(signature)
 
@@ -84,9 +78,6 @@ class Compressor(Writer):
         if signature is None:
             return data
         elif signature in ['lzma', 'sc', 'sig']:
-            # compressor = lzma.LZMACompressor(format=lzma.FORMAT_ALONE, filters=self.lzma_filters)
-            # 
-            # compressed = compressor.compress(data)
             compressed = lzma.compress(data, format=lzma.FORMAT_ALONE, filters=self.lzma_filters)
 
             self.write(compressed[:5])

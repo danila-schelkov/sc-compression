@@ -4,9 +4,13 @@ with open('README.md') as fh:
     long_description = fh.read()
     fh.close()
 
+with open('requirements.txt') as fh:
+    requirements = [line for line in fh.readlines() if line != '']
+    fh.close()
+
 setuptools.setup(
     name='sc-compression',
-    version='0.2.8',
+    version='0.2.9',
     author='Vorono4ka',
     author_email='crowo4ka@gmail.com',
     description='SC Compression',
@@ -21,4 +25,5 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.5',
+    install_require=requirements
 )

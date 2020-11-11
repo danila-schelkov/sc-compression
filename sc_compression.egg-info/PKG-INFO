@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sc-compression
-Version: 0.2.8
+Version: 0.2.9
 Summary: SC Compression
 Home-page: https://github.com/vorono4ka/sc-compression
 Author: Vorono4ka
@@ -8,7 +8,7 @@ Author-email: crowo4ka@gmail.com
 License: GPLv3
 Description: ### SC Compression
         
-        Version 0.2.8
+        Version 0.2.9
         -
         
         ### Tools:
