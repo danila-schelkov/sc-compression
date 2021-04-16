@@ -1,3 +1,5 @@
 __all__ = [
-    'compression'
+    'decompressor',
+    'compressor',
+    'signatures'
 ]

@@ -6,5 +6,4 @@ examples/compressor/in/
 .idea/
 build/
 dist/
-
-.idea/vcs.xml
+*.pyc

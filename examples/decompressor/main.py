@@ -1,6 +1,6 @@
 import os
 
-from sc_compression.compression import Decompressor
+from sc_compression.decompressor import Decompressor
 
 if not os.path.exists('in'):
 	os.mkdir('in')

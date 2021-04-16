@@ -1,6 +1,7 @@
 import os
 
-from sc_compression.compression import Compressor
+from sc_compression.compressor import Compressor
+from sc_compression.signatures import Signatures
 
 if not os.path.exists('in'):
 	os.mkdir('in')
@@ -16,6 +17,6 @@ for filename in os.listdir('in'):
 		f.close()
 	with open('out/' + filename, 'wb') as f:
 		f.write(
-			compressor.compress(filedata, 'sc')
+			compressor.compress(filedata, Signatures.SCLZ)
 		)
 		f.close()

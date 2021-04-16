@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sc-compression
-Version: 0.3.0
+Version: 0.4.5
 Summary: SC Compression
 Home-page: https://github.com/vorono4ka/sc-compression
 Author: Vorono4ka
@@ -8,12 +8,19 @@ Author-email: crowo4ka@gmail.com
 License: GPLv3
 Description: ### SC Compression
         
-        Version 0.3.0
+        Version 0.4.5
         -
         
         ### Tools:
         - Decompression
         - Compression
+        
+        ### Supported compressions:
+        - LZMA
+        - SC
+        - SCLZ
+        - SIG
+        - ZSTD
         
         TestPyPi - https://test.pypi.org/project/sc-compression/ <br>
         PyPi - https://pypi.org/project/sc-compression/

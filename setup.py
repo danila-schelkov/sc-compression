@@ -5,12 +5,12 @@ with open('README.md') as fh:
     fh.close()
 
 with open('requirements.txt') as fh:
-    requirements = [line for line in fh.readlines() if line != '']
+    requirements = [line.rstrip('\n') for line in fh.readlines() if line != '']
     fh.close()
 
 setuptools.setup(
     name='sc-compression',
-    version='0.3.0',
+    version='0.4.5',
     author='Vorono4ka',
     author_email='crowo4ka@gmail.com',
     description='SC Compression',
