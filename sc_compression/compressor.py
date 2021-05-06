@@ -33,8 +33,11 @@ class Compressor(Writer):
     def __init__(self):
         super().__init__('little')
 
-    def compress(self, data, signature: int) -> bytes:
+    def compress(self, data, signature: int, file_version: int = None) -> bytes:
         uncompressed_size = len(data)
+
+        if file_version is None:
+            file_version = 2 if zstandard and not (Signatures.SCLZ & signature) else 1
 
         if Signatures.ZSTD & signature and not zstandard or \
            Signatures.SCLZ & signature and not lzham:
@@ -43,7 +46,7 @@ class Compressor(Writer):
         super().__init__('little')
         if signature is Signatures.NONE:
             return data
-        elif ((Signatures.LZMA | Signatures.SIG) & signature) or (Signatures.SC & signature and not zstandard):
+        elif ((Signatures.LZMA | Signatures.SIG) & signature) or (Signatures.SC & signature and file_version != 2):
             compressed = lzma.compress(data, format=lzma.FORMAT_ALONE, filters=self.lzma_filters)
 
             self.write(compressed[:5])
@@ -54,7 +57,6 @@ class Compressor(Writer):
 
             compressed = self.buffer
         elif (Signatures.SCLZ & signature) and lzham:
-            # noinspection PyUnresolvedReferences
             compressed = lzham.compress(data, filters=self.lzham_filters)
 
             self.write(b'SCLZ')
@@ -63,19 +65,18 @@ class Compressor(Writer):
             self.write(compressed)
 
             compressed = self.buffer
-        elif (Signatures.SC | Signatures.ZSTD) & signature:
-            # noinspection PyUnresolvedReferences
+        elif (Signatures.SC | Signatures.ZSTD) & signature and file_version == 2:
             compressor = zstandard.ZstdCompressor()
             compressed = compressor.compress(data)
         else:
             raise TypeError('Unknown Signature!')
 
         super().__init__('big')
-        if (Signatures.SC | Signatures.SCLZ | Signatures.ZSTD) & signature:
+        if (Signatures.SC | Signatures.SCLZ) & signature:
             data_hash = md5(data)
 
             self.write(b'SC')
-            self.writeInt32(2 if zstandard and not (Signatures.SCLZ & signature) else 1)
+            self.writeInt32(file_version)
             self.writeInt32(16)
             compressed = self.buffer + data_hash.digest() + compressed
         elif signature == Signatures.SIG:

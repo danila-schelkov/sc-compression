@@ -10,7 +10,7 @@ with open('requirements.txt') as fh:
 
 setuptools.setup(
     name='sc-compression',
-    version='0.4.5',
+    version='0.4.7',
     author='Vorono4ka',
     author_email='crowo4ka@gmail.com',
     description='SC Compression',
