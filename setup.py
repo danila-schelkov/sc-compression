@@ -10,7 +10,7 @@ with open('requirements.txt') as fh:
 
 setuptools.setup(
     name='sc-compression',
-    version='0.4.7',
+    version='0.5.1',
     author='Vorono4ka',
     author_email='crowo4ka@gmail.com',
     description='SC Compression',
@@ -25,5 +25,9 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.5',
-    install_require=requirements
+    install_requires=requirements,
+
+    package_data={
+        "": ["support/lzham.exe"],
+    }
 )

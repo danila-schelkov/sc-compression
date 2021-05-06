@@ -7,7 +7,13 @@ from sc_compression.utils.writer import Writer
 try:
     import lzham
 except ImportError:
+    from platform import system as get_system_name
+
     lzham = None
+    if get_system_name() == 'Windows':
+        from sc_compression.support.lzham import LZHAM
+
+        lzham = LZHAM
 
 try:
     import zstandard

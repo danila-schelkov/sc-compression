@@ -6,7 +6,13 @@ from sc_compression.utils.reader import Reader
 try:
     import lzham
 except ImportError:
+    from platform import system as get_system_name
+
     lzham = None
+    if get_system_name() == 'Windows':
+        from sc_compression.support.lzham import LZHAM
+
+        lzham = LZHAM
 
 try:
     import zstandard
@@ -37,10 +43,10 @@ class Decompressor(Reader):
             decompressed = self.decompress(buffer)
         elif signature == Signatures.SCLZ:
             self.read(4)
-            if lzham:
-                dict_size_log2 = self.readUByte()
-                uncompressed_size = self.readInt32()
+            dict_size_log2 = self.readUByte()
+            uncompressed_size = self.readInt32()
 
+            if lzham:
                 filters = {
                     'dict_size_log2': dict_size_log2
                 }
