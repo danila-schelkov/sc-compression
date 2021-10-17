@@ -32,12 +32,17 @@ class Decompressor(Reader):
 
         decompressed = buffer
         signature = self.signatures.get_signature(self.buffer, self.file_version)
+        if signature == Signatures.NONE:
+            return decompressed
+
         if signature == Signatures.SC:
             super().__init__(buffer, 'big')
             self.read(2)
             self.file_version = self.readInt32()
+            if self.file_version >= 4:
+                self.file_version = self.readInt32()
             self.hash = self.read(self.readInt32())
-            decompressed = self.decompress(buffer[26:])
+            decompressed = self.decompress(buffer[self.i:])
         elif signature == Signatures.SIG:
             buffer = buffer[68:]
             decompressed = self.decompress(buffer)

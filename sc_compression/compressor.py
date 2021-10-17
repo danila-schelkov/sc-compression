@@ -43,7 +43,7 @@ class Compressor(Writer):
         uncompressed_size = len(data)
 
         if file_version is None:
-            file_version = 2 if zstandard and not (Signatures.SCLZ & signature) else 1
+            file_version = 3 if zstandard and not (Signatures.SCLZ & signature) else 1
 
         if Signatures.ZSTD & signature and not zstandard or \
            Signatures.SCLZ & signature and not lzham:
@@ -52,7 +52,7 @@ class Compressor(Writer):
         super().__init__('little')
         if signature is Signatures.NONE:
             return data
-        elif ((Signatures.LZMA | Signatures.SIG) & signature) or (Signatures.SC & signature and file_version != 2):
+        elif ((Signatures.LZMA | Signatures.SIG) & signature) or (Signatures.SC & signature and file_version != 3):
             compressed = lzma.compress(data, format=lzma.FORMAT_ALONE, filters=self.lzma_filters)
 
             self.write(compressed[:5])
@@ -71,7 +71,7 @@ class Compressor(Writer):
             self.write(compressed)
 
             compressed = self.buffer
-        elif (Signatures.SC | Signatures.ZSTD) & signature and file_version == 2:
+        elif (Signatures.SC | Signatures.ZSTD) & signature and file_version == 3:
             compressor = zstandard.ZstdCompressor()
             compressed = compressor.compress(data)
         else:
@@ -79,12 +79,15 @@ class Compressor(Writer):
 
         super().__init__('big')
         if (Signatures.SC | Signatures.SCLZ) & signature:
-            data_hash = md5(data)
+            data_hash = md5(data).digest()
 
             self.write(b'SC')
             self.writeInt32(file_version)
-            self.writeInt32(16)
-            compressed = self.buffer + data_hash.digest() + compressed
+            if file_version == 4:
+                self.writeInt32(1)
+            self.writeInt32(len(data_hash))
+            self.write(data_hash)
+            compressed = self.buffer + compressed
         elif signature == Signatures.SIG:
             self.write(b'Sig:')
             self.write(b'\x00' * 64)  # sha64

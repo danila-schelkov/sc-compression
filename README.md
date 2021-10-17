@@ -1,11 +1,11 @@
 ### SC Compression
 
-Version 0.5.1
+Version 0.5.6
 -
 
 ### Tools:
-- Decompression
-- Compression
+- Decompressor
+- Compressor
 
 ### Supported compressions:
 - LZMA
