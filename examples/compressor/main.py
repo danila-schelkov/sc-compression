@@ -16,6 +16,6 @@ for filename in os.listdir('in'):
 		f.close()
 	with open('out/' + filename, 'wb') as f:
 		f.write(
-			compress(filedata, Signatures.SC, 4)
+			compress(filedata, Signatures.SC, 3)
 		)
 		f.close()

@@ -1,6 +1,6 @@
 ### SC Compression
 
-Version 0.5.6
+Version 0.5.7
 -
 
 ### Tools:
