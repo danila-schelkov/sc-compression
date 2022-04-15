@@ -58,7 +58,7 @@ class Decompressor(Reader):
                 decompressed = lzham.decompress(self.buffer[self.tell():], uncompressed_size, filters)
         elif signature == Signatures.LZMA:
             decompressor = lzma.LZMADecompressor()
-            compressed = self.buffer[:9] + b'\x00' * 4 + self.buffer[9:]
+            compressed = self.buffer[:5] + b'\xff' * 8 + self.buffer[9:]
 
             decompressed = decompressor.decompress(compressed)
         elif signature == Signatures.ZSTD:
