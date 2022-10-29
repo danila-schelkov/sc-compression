@@ -39,20 +39,20 @@ class Compressor(Writer):
     def __init__(self):
         super().__init__('little')
 
-    def compress(self, data, signature: int, file_version: int = None) -> bytes:
+    def compress(self, data, signature: Signatures, file_version: int = None) -> bytes:
         uncompressed_size = len(data)
 
         if file_version is None:
-            file_version = 3 if zstandard and not (Signatures.SCLZ & signature) else 1
+            file_version = 3 if zstandard and signature != Signatures.SCLZ else 1
 
-        if Signatures.ZSTD & signature and not zstandard or \
-           Signatures.SCLZ & signature and not lzham:
+        if signature == Signatures.ZSTD and not zstandard or \
+                signature == Signatures.SCLZ and not lzham:
             signature = Signatures.SC
 
         super().__init__('little')
         if signature is Signatures.NONE:
             return data
-        elif ((Signatures.LZMA | Signatures.SIG) & signature) or (Signatures.SC & signature and file_version != 3):
+        elif signature in (Signatures.LZMA, Signatures.SIG) or (signature == Signatures.SC and file_version != 3):
             compressed = lzma.compress(data, format=lzma.FORMAT_ALONE, filters=self.lzma_filters)
 
             self.write(compressed[:5])
@@ -62,7 +62,7 @@ class Compressor(Writer):
             self.write(compressed[13:])
 
             compressed = self.buffer
-        elif (Signatures.SCLZ & signature) and lzham:
+        elif signature == Signatures.SCLZ and lzham:
             compressed = lzham.compress(data, filters=self.lzham_filters)
 
             self.write(b'SCLZ')
@@ -71,14 +71,14 @@ class Compressor(Writer):
             self.write(compressed)
 
             compressed = self.buffer
-        elif (Signatures.SC | Signatures.ZSTD) & signature and file_version == 3:
+        elif signature in (Signatures.SC, Signatures.ZSTD) and file_version == 3:
             compressor = zstandard.ZstdCompressor()
             compressed = compressor.compress(data)
         else:
             raise TypeError('Unknown Signature!')
 
         super().__init__('big')
-        if (Signatures.SC | Signatures.SCLZ) & signature:
+        if signature in (Signatures.SC, Signatures.SCLZ):
             data_hash = md5(data).digest()
 
             self.write(b'SC')
