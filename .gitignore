@@ -1,9 +1,14 @@
-sc_compression.egg-info/
-examples/decompressor/out/
-examples/decompressor/in/
-examples/compressor/out/
-examples/compressor/in/
-.idea/
-build/
-dist/
+# IDE project directories
+/.idea/
+
+# Setuptools directories
+/sc_compression.egg-info/
+/build/
+/dist/
+
+# Scripts directories
+/examples/**/out/
+/examples/**/in/
+
+# Python compiled files
 *.pyc

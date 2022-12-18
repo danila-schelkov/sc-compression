@@ -12,10 +12,8 @@ if not os.path.exists('out'):
 
 for filename in os.listdir('in'):
 	with open('in/' + filename, 'rb') as f:
-		filedata = f.read()
+		file_data = f.read()
 		f.close()
 	with open('out/' + filename, 'wb') as f:
-		f.write(
-			compress(filedata, Signatures.SC, 3)
-		)
+		f.write(compress(file_data, Signatures.SC, 3))
 		f.close()
