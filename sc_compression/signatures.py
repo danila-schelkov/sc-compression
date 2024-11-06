@@ -11,19 +11,19 @@ class Signatures(Enum):
     ZSTD = 5
 
 
-def get_signature(buffer: bytes, file_version: int = -1) -> Signatures:
+def get_signature(buffer: bytes) -> Signatures:
     signature = Signatures.NONE
 
-    if re.match(b'\x00\x00?\x00', buffer[1:5]):
+    if re.match(b"\x00\x00?\x00", buffer[1:5]):
         signature = Signatures.LZMA
-    elif file_version >= 2 and buffer.startswith(b'\x28\xb5\x2f\xfd'):
+    elif buffer.startswith(b"\x28\xb5\x2f\xfd"):
         signature = Signatures.ZSTD
 
-    if buffer.startswith(b'SCLZ'):
+    if buffer.startswith(b"SCLZ"):
         signature = Signatures.SCLZ
-    elif buffer.startswith(b'SC'):
+    elif buffer.startswith(b"SC"):
         signature = Signatures.SC
-    elif buffer[:4] == b'Sig:':
+    elif buffer.startswith(b"Sig:"):
         signature = Signatures.SIG
 
     return signature
