@@ -1,117 +1,69 @@
+import struct
+from typing import Literal
+
+
+ENDIAN_SIGN = {"big": ">", "little": "<"}
+
+
 class Writer:
-    def __init__(self, endian: str = 'big'):
+    def __init__(self, endian: Literal["little", "big"] = "big"):
         super(Writer, self).__init__()
-        self.endian = endian
-        self.buffer = b''
+
+        self.endian: Literal["little", "big"] = endian
+        self.buffer = b""
 
     def write(self, data: bytes):
         self.buffer += data
 
-    def writeUInteger(self, integer: int, length: int = 1):
+    def write_u_integer(self, integer: int, length: int = 1):
         self.buffer += integer.to_bytes(length, self.endian, signed=False)
 
-    def writeInteger(self, integer: int, length: int = 1):
+    def write_integer(self, integer: int, length: int = 1):
         self.buffer += integer.to_bytes(length, self.endian, signed=True)
 
-    def writeUInt64(self, integer: int):
-        self.writeUInteger(integer, 8)
+    def write_u_int64(self, integer: int) -> None:
+        self.write_u_integer(integer, 8)
 
-    def writeInt64(self, integer: int):
-        self.writeInteger(integer, 8)
+    def write_int64(self, integer: int) -> None:
+        self.write_integer(integer, 8)
 
-    def writeFloat(self, floating: float):
-        exponent = 0
-        sign = 1
+    def write_float(self, floating: float) -> None:
+        self.write(struct.pack(ENDIAN_SIGN[self.endian] + "f", floating))
 
-        if floating < 0:
-            sign = -1
-            floating = -floating
+    def write_u_int32(self, integer: int) -> None:
+        self.write_u_integer(integer, 4)
 
-        if floating >= 2 ** -1022:
-            value = floating
+    def write_int32(self, integer: int) -> None:
+        self.write_integer(integer, 4)
 
-            while value < 1:
-                exponent -= 1
-                value *= 2
-            while value >= 2:
-                exponent += 1
-                value /= 2
+    def write_nu_int16(self, integer: int) -> None:
+        self.write_u_int16(integer * 65535)
 
-        mantissa = floating / 2 ** exponent
+    def write_u_int16(self, integer: int) -> None:
+        self.write_u_integer(integer, 2)
 
-        exponent += 127
+    def write_n_int16(self, integer: int) -> None:
+        self.write_int16(integer * 32512)
 
-        as_integer_bin = '0'
-        if sign == -1:
-            as_integer_bin = '1'
+    def write_int16(self, integer: int) -> None:
+        self.write_integer(integer, 2)
 
-        as_integer_bin += bin(exponent)[2:].zfill(8)
+    def write_u_int8(self, integer: int) -> None:
+        self.write_u_integer(integer)
 
-        mantissa_bin = ''
-        for x in range(24):
-            bit = '0'
-            if mantissa >= 1/2**x:
-                mantissa -= 1/2**x
-                bit = '1'
-            mantissa_bin += bit
+    def write_int8(self, integer: int) -> None:
+        self.write_integer(integer)
 
-        mantissa_bin = mantissa_bin[1:]
-
-        as_integer_bin += mantissa_bin
-        as_integer = int(as_integer_bin, 2)
-
-        self.writeUInt32(as_integer)
-
-    def writeUInt32(self, integer: int):
-        self.writeUInteger(integer, 4)
-
-    def writeInt32(self, integer: int):
-        self.writeInteger(integer, 4)
-
-    def writeNUInt16(self, integer: int):
-        self.writeUInt16(integer * 65535)
-
-    def writeUInt16(self, integer: int):
-        self.writeUInteger(integer, 2)
-
-    def writeNInt16(self, integer: int):
-        self.writeInt16(integer * 32512)
-
-    def writeInt16(self, integer: int):
-        self.writeInteger(integer, 2)
-
-    def writeUInt8(self, integer: int):
-        self.writeUInteger(integer)
-
-    def writeInt8(self, integer: int):
-        self.writeInteger(integer)
-
-    def writeBool(self, boolean: bool):
+    def write_bool(self, boolean: bool) -> None:
         if boolean:
-            self.writeUInt8(1)
+            self.write_u_int8(1)
         else:
-            self.writeUInt8(0)
+            self.write_u_int8(0)
 
-    writeUInt = writeUInteger
-    writeInt = writeInteger
+    def write_char(self, string: str) -> None:
+        self.buffer += string.encode("utf-8")
 
-    writeULong = writeUInt64
-    writeLong = writeInt64
-
-    writeNUShort = writeNUInt16
-    writeNShort = writeNInt16
-
-    writeUShort = writeUInt16
-    writeShort = writeInt16
-
-    writeUByte = writeUInt8
-    writeByte = writeInt8
-
-    def writeChar(self, string: str):
-        for char in list(string):
-            self.buffer += char.encode('utf-8')
-
-    def writeString(self, string: str):
-        encoded = string.encode('utf-8')
-        self.writeUShort(len(encoded))
+    def write_string(self, string: str) -> None:
+        encoded = string.encode("utf-8")
+        self.write_u_int16(len(encoded))
         self.buffer += encoded
